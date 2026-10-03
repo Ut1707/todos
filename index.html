@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="ToDos">
+  <meta name="description" content="ToDos, Erinnerungen und Gedanken – mit Spracheingabe.">
+  <title>ToDos</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <h1 id="page-title">ToDos</h1>
+      <button class="icon-btn" id="settings-btn" aria-label="Einstellungen">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+      </button>
+    </header>
+
+    <div id="install-hint" class="banner" hidden>
+      <span>Tipp: Über <strong>Teilen → Zum Home-Bildschirm</strong> installieren. Dann bleiben deine Daten dauerhaft gespeichert.</span>
+      <button class="banner-close" id="install-hint-close" aria-label="Hinweis schließen">✕</button>
+    </div>
+
+    <main>
+      <section id="view-todo" class="view" data-view="todo">
+        <div class="chips" id="category-filter" role="tablist" aria-label="Kategorie-Filter"></div>
+        <ul class="list" id="todo-list"></ul>
+      </section>
+
+      <section id="view-reminder" class="view" data-view="reminder" hidden>
+        <div id="reminder-list"></div>
+      </section>
+
+      <section id="view-thought" class="view" data-view="thought" hidden>
+        <div class="search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input type="search" id="thought-search" placeholder="Gedanken durchsuchen" autocomplete="off">
+        </div>
+        <div class="chips" id="tag-filter" aria-label="Schlagwort-Filter"></div>
+        <div id="thought-list" class="cards"></div>
+      </section>
+    </main>
+
+    <footer class="bottom">
+      <form class="composer" id="composer" autocomplete="off">
+        <input id="composer-input" type="text" enterkeyhint="done" placeholder="Neues ToDo …" aria-label="Neuer Eintrag">
+        <button type="button" class="composer-more" id="composer-more" aria-label="Mit Details anlegen">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <button type="button" class="mic-btn" id="mic-btn" aria-label="Spracheingabe starten">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3.5"/></svg>
+        </button>
+      </form>
+      <nav class="tabbar" aria-label="Bereiche">
+        <button class="tab active" data-tab="todo" aria-current="page">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16.5 9.5"/></svg>
+          <span>ToDos</span><b class="tab-badge" id="badge-todo" hidden></b>
+        </button>
+        <button class="tab" data-tab="reminder">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          <span>Erinnerungen</span><b class="tab-badge" id="badge-reminder" hidden></b>
+        </button>
+        <button class="tab" data-tab="thought">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3Z"/></svg>
+          <span>Gedanken</span>
+        </button>
+      </nav>
+    </footer>
+  </div>
+
+  <!-- Eingabe-/Bearbeiten-Sheet -->
+  <div class="sheet-backdrop" id="sheet" hidden>
+    <form class="sheet" id="item-form" role="dialog" aria-modal="true" aria-labelledby="sheet-title" autocomplete="off">
+      <div class="sheet-head">
+        <button type="button" class="link-btn" data-close>Abbrechen</button>
+        <h2 id="sheet-title">Neu</h2>
+        <button type="submit" class="link-btn strong">Sichern</button>
+      </div>
+
+      <div class="segmented" role="radiogroup" aria-label="Bereich">
+        <label><input type="radio" name="type" value="todo" checked><span>ToDo</span></label>
+        <label><input type="radio" name="type" value="reminder"><span>Erinnerung</span></label>
+        <label><input type="radio" name="type" value="thought"><span>Gedanke</span></label>
+      </div>
+
+      <p class="dictation-hint" id="dictation-hint" hidden>
+        Spracheingabe ist hier nicht verfügbar. Tippe unten auf der Tastatur auf das <strong>Mikrofon</strong> und sprich einfach. Datum, Kategorie usw. werden automatisch erkannt.
+      </p>
+
+      <textarea id="f-text" rows="3" placeholder="Was möchtest du festhalten?" required></textarea>
+
+      <div class="field-group" data-for="todo">
+        <div class="field-label">Kategorie</div>
+        <div class="chips wrap" id="f-category"></div>
+        <div class="row-fields">
+          <label class="field"><span>Fällig am</span><input type="date" id="f-due-date"></label>
+          <label class="field"><span>Uhrzeit</span><input type="time" id="f-due-time"></label>
+        </div>
+        <label class="toggle-row">
+          <span>Wichtig</span>
+          <input type="checkbox" id="f-priority" class="switch">
+        </label>
+      </div>
+
+      <div class="field-group" data-for="reminder">
+        <div class="row-fields">
+          <label class="field"><span>Datum</span><input type="date" id="f-rem-date"></label>
+          <label class="field"><span>Uhrzeit</span><input type="time" id="f-rem-time"></label>
+        </div>
+        <div class="quick-times" id="quick-times">
+          <button type="button" data-quick="1h">In 1 Std.</button>
+          <button type="button" data-quick="tonight">Heute 19:00</button>
+          <button type="button" data-quick="tomorrow">Morgen 9:00</button>
+        </div>
+        <label class="toggle-row">
+          <span>Danach in Kalender übernehmen</span>
+          <input type="checkbox" id="f-to-calendar" class="switch">
+        </label>
+      </div>
+
+      <div class="field-group" data-for="thought">
+        <label class="field"><span>Schlagworte</span><input type="text" id="f-tags" placeholder="#idee #buch" autocapitalize="none"></label>
+      </div>
+
+      <div class="sheet-actions" id="sheet-actions">
+        <button type="button" class="action-btn" id="convert-btn" hidden>In ToDo umwandeln</button>
+        <button type="button" class="action-btn" id="calendar-btn" hidden>In Kalender übernehmen</button>
+        <button type="button" class="action-btn danger" id="delete-btn" hidden>Löschen</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Einstellungen -->
+  <div class="sheet-backdrop" id="settings" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <div class="sheet-head">
+        <span></span>
+        <h2 id="settings-title">Einstellungen</h2>
+        <button type="button" class="link-btn strong" data-close>Fertig</button>
+      </div>
+
+      <h3 class="section-title">Kategorien</h3>
+      <ul class="group" id="category-list"></ul>
+      <form class="group add-category" id="add-category-form" autocomplete="off">
+        <input type="text" id="new-category" placeholder="Neue Kategorie" aria-label="Name der neuen Kategorie" maxlength="24">
+        <button type="submit" class="link-btn strong">Hinzufügen</button>
+      </form>
+
+      <h3 class="section-title">Backup</h3>
+      <div class="group">
+        <button type="button" class="group-row" id="export-btn">Backup exportieren</button>
+        <label class="group-row file-row">Backup importieren<input type="file" id="import-input" accept="application/json,.json"></label>
+      </div>
+      <p class="footnote" id="backup-info"></p>
+
+      <h3 class="section-title">Spracheingabe</h3>
+      <p class="footnote">
+        Beispiele: „Erinnere mich morgen um 9 an den Zahnarzt“ · „Idee Hashtag Buch Drachengeschichte“ ·
+        „Steuer abgeben bis Freitag wichtig Kategorie Finanzen“. Ohne Schlüsselwort landet der Eintrag im gerade offenen Bereich.
+      </p>
+      <p class="footnote">Alle Daten bleiben ausschließlich auf diesem Gerät.</p>
+    </div>
+  </div>
+
+  <!-- Zuhören -->
+  <div class="listen-backdrop" id="listening" hidden>
+    <div class="listen" role="dialog" aria-modal="true" aria-label="Spracheingabe">
+      <div class="pulse"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3.5"/></svg></div>
+      <p class="listen-text" id="listen-text" aria-live="polite">Ich höre zu …</p>
+      <div class="listen-actions">
+        <button type="button" class="link-btn" id="listen-cancel">Abbrechen</button>
+        <button type="button" class="pill-btn" id="listen-done">Fertig</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden>
+    <span id="toast-text"></span>
+    <button type="button" id="toast-action" hidden></button>
+  </div>
+
+  <script src="parser.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
